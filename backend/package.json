@@ -1,0 +1,15 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Splitwise clone for knowledge demostration purposes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node src/index.js"
+  },
+  "author": "Antonio José de la Torre Pérez",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^5.8.2"
+  }
+}
