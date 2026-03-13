@@ -10,3 +10,9 @@ start:
 stop:
 	@echo "Stopping the application..."
 	@docker-compose down
+
+test:
+	@echo "Running tests..."
+	@docker-compose run --rm tests npx jest --watchAll --forceExit \
+		$(if $(match), -t "$(match)",) \
+		$(if $(file), --testPathPattern="$(file)",)

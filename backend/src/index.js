@@ -1,16 +1,10 @@
-const fastify = require("fastify")({
-  logger: true,
-});
-
-fastify.get("/", async (request, reply) => {
-  return { hello: "mundo" };
-});
+const app = require("./app");
 
 const start = async () => {
   try {
-    await fastify.listen({ port: 3000, host: "0.0.0.0" });
+    await app.listen({ port: 3000, host: "0.0.0.0" });
   } catch (err) {
-    fastify.log.error(err);
+    app.log.error(err);
     process.exit(1);
   }
 };

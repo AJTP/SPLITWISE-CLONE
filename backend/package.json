@@ -4,12 +4,15 @@
   "description": "Splitwise clone for knowledge demostration purposes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node src/index.js"
+    "dev": "LOG_PRETTURY=true nodemon",
+    "test": "jest --forceExit"
   },
-  "author": "Antonio José de la Torre Pérez",
   "license": "ISC",
   "dependencies": {
     "fastify": "^5.8.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.14"
   }
 }

@@ -6,10 +6,16 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-splitwise}
+    env_file:
+      - .env
     ports:
       - "${BACKEND_PORT:-4000}:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     restart: always
     command: npm run dev
 
@@ -20,11 +26,35 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_USER: ${POSTGRES_USER:-user}
       POSTGRES_DB: ${POSTGRES_DB:-splitwise}
+      POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_DB:-splitwise},${POSTGRES_TEST_DB:-splitwise_test}
     ports:
       - "${DATABASE_PORT:-5432}:5432"
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  tests:
+    container_name: backend_tests
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-splitwise_test}
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      database:
+        condition: service_healthy
+    command: npx jest --watchAll --forceExit
 
 volumes:
   postgres_data:
