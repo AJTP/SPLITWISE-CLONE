@@ -41,6 +41,8 @@ services:
 
   tests:
     container_name: backend_tests
+    profiles:
+      - tests
     build:
       context: ./backend
       dockerfile: Dockerfile

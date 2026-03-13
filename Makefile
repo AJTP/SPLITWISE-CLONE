@@ -13,6 +13,6 @@ stop:
 
 test:
 	@echo "Running tests..."
-	@docker-compose run --rm tests npx jest --watchAll --forceExit \
+	@docker-compose --profile tests run --rm tests npx jest --watchAll --forceExit \
 		$(if $(match), -t "$(match)",) \
 		$(if $(file), --testPathPattern="$(file)",)
