@@ -11,8 +11,8 @@ services:
     ports:
       - "${BACKEND_PORT:-4000}:3000"
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend/src:/app/src:delegated
+      - ./backend/package.json:/app/package.json:delegated
     depends_on:
       database:
         condition: service_healthy
@@ -21,7 +21,7 @@ services:
 
   database:
     container_name: database
-    image: postgres:latest
+    image: postgres:16
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_USER: ${POSTGRES_USER:-user}
@@ -55,8 +55,9 @@ services:
     env_file:
       - .env
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend/src:/app/src:delegated
+      - ./backend/package.json:/app/package.json:delegated
+      - ./backend/tests:/app/tests:delegated
     depends_on:
       database:
         condition: service_healthy
