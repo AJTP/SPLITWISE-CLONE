@@ -2,8 +2,8 @@ const fastify = require("fastify")({
   logger: false, // silenciar logs en tests
 });
 
-fastify.get("/", async (request, reply) => {
-  return { hello: "mundo" };
+fastify.get("/health", async (request, reply) => {
+  return { status: "ok" };
 });
 
 module.exports = fastify;
