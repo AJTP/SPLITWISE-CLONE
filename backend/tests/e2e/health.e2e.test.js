@@ -1,17 +1,17 @@
 const app = require("../../src/app");
 
-describe("GET /", () => {
+describe("GET /health", () => {
   afterAll(async () => {
     await app.close();
   });
 
-  it("devuelve hello mundo", async () => {
+  it("returns status ok ", async () => {
     const response = await app.inject({
       method: "GET",
-      url: "/",
+      url: "/health",
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({ hello: "mundo" });
+    expect(response.json()).toEqual({ status: "ok" });
   });
 });
