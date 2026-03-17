@@ -4,6 +4,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    restart: always
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-splitwise}
     env_file:
@@ -16,28 +17,30 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    restart: always
-    command: npm run dev
+
+    command: npm start
 
   database:
     container_name: database
-    image: postgres:16
+    image: postgres:15-alpine
+    restart: always
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_USER: ${POSTGRES_USER:-user}
       POSTGRES_DB: ${POSTGRES_DB:-splitwise}
       POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_DB:-splitwise},${POSTGRES_TEST_DB:-splitwise_test}
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: postgres -c shared_preload_libraries='' -c log_min_messages=warning
     ports:
       - "${DATABASE_PORT:-5432}:5432"
-    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./databases/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-database}",
+          "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-splitwise}",
         ]
       interval: 5s
       timeout: 5s

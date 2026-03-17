@@ -4,15 +4,23 @@
   "description": "Splitwise clone for knowledge demostration purposes",
   "main": "index.js",
   "scripts": {
-    "dev": "LOG_PRETTURY=true nodemon",
+    "start": "npx prisma generate && npx prisma migrate dev --name init && npx prisma db seed && node src/index.js",
+    "dev": "npx prisma generate && npx prisma migrate dev && npx prisma db seed && LOG_PRETTY=true nodemon",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
+    "db:seed": "npx prisma db seed",
+    "db:reset": "npx prisma migrate reset",
     "test": "jest --forceExit"
   },
   "license": "ISC",
   "dependencies": {
-    "fastify": "^5.8.2"
+    "@prisma/client": "^6.19.2",
+    "fastify": "^5.8.2",
+    "prisma": "^6.19.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.2"
   }
 }
