@@ -1,5 +1,5 @@
 const fastify = require("fastify")({
-  logger: false, // silenciar logs en tests
+  logger: process.env.NODE_ENV !== "test",
 });
 
 const { PrismaClient } = require("@prisma/client");

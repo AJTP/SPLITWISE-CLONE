@@ -11,6 +11,11 @@ stop:
 	@echo "Stopping the application..."
 	@docker-compose down
 
+reset:
+	@echo "Resetting the application (removes volumes and migrations)..."
+	@docker-compose down -v
+	@rm -rf ./backend/prisma/migrations
+
 test:
 	@echo "Running tests..."
 	@docker-compose --profile tests run --rm tests npx jest --watchAll --forceExit \
