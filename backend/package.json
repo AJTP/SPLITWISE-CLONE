@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "npx prisma generate && npx prisma migrate dev --name init && npx prisma db seed && node src/index.js",
-    "dev": "npx prisma generate && npx prisma migrate dev && npx prisma db seed && LOG_PRETTY=true nodemon",
-    "db:migrate": "npx prisma migrate dev",
+    "dev": "npx prisma generate && npx prisma migrate dev --name init && npx prisma db seed && LOG_PRETTY=true nodemon",
+    "db:migrate": "npx prisma migrate deploy",
     "db:generate": "npx prisma generate",
     "db:seed": "npx prisma db seed",
     "db:reset": "npx prisma migrate reset",
-    "test": "jest --forceExit"
+    "test": "prisma generate && jest --forceExit"
   },
   "license": "ISC",
   "dependencies": {

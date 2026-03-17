@@ -1,4 +1,4 @@
-const app = require("../../src/app");
+const app = require("../../app");
 
 describe("GET /health", () => {
   afterAll(async () => {
@@ -12,6 +12,6 @@ describe("GET /health", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({ status: "ok" });
+    expect(response.json()).toEqual({ status: "ok", database: "connected" });
   });
 });

@@ -60,6 +60,7 @@ services:
       - .env
     volumes:
       - ./backend/src:/app/src:delegated
+      - ./backend/prisma:/app/prisma:delegated
       - ./backend/package.json:/app/package.json:delegated
       - ./backend/tests:/app/tests:delegated
     depends_on:

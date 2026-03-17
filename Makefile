@@ -18,6 +18,5 @@ reset:
 
 test:
 	@echo "Running tests..."
-	@docker-compose --profile tests run --rm tests npx jest --watchAll --forceExit \
-		$(if $(match), -t "$(match)",) \
-		$(if $(file), --testPathPattern="$(file)",)
+	@docker-compose --profile tests build tests
+	@docker-compose --profile tests run --rm tests sh -c "npm test -- --watchAll $(if $(match), -t '$(match)',) $(if $(file), --testPathPattern='$(file)',)"
