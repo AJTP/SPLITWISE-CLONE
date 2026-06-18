@@ -1,6 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
+const bcryptjs = require("bcryptjs");
 
 const prisma = new PrismaClient();
+const SALT_ROUNDS = 10;
+let hashedPassword;
 
 async function cleanDb() {
   await prisma.settlement.deleteMany();
@@ -14,10 +17,18 @@ async function cleanDb() {
 
 async function createBaseData() {
   const user1 = await prisma.user.create({
-    data: { email: "payer@example.com", name: "Payer" },
+    data: {
+      email: "payer@example.com",
+      name: "Payer",
+      password: hashedPassword,
+    },
   });
   const user2 = await prisma.user.create({
-    data: { email: "participant@example.com", name: "Participant" },
+    data: {
+      email: "participant@example.com",
+      name: "Participant",
+      password: hashedPassword,
+    },
   });
   const group = await prisma.group.create({ data: { name: "Expense Group" } });
   await prisma.groupMember.createMany({
@@ -28,6 +39,10 @@ async function createBaseData() {
   });
   return { user1, user2, group };
 }
+
+beforeAll(async () => {
+  hashedPassword = await bcryptjs.hash("password123", SALT_ROUNDS);
+});
 
 beforeEach(async () => {
   await cleanDb();

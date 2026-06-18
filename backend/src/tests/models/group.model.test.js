@@ -1,6 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
+const bcryptjs = require("bcryptjs");
 
 const prisma = new PrismaClient();
+const SALT_ROUNDS = 10;
+let hashedPassword;
 
 async function cleanDb() {
   await prisma.settlement.deleteMany();
@@ -11,6 +14,10 @@ async function cleanDb() {
   await prisma.group.deleteMany();
   await prisma.user.deleteMany();
 }
+
+beforeAll(async () => {
+  hashedPassword = await bcryptjs.hash("password123", SALT_ROUNDS);
+});
 
 beforeEach(async () => {
   await cleanDb();
@@ -43,10 +50,18 @@ describe("Group model", () => {
 
   it("adds members to a group", async () => {
     const user1 = await prisma.user.create({
-      data: { email: "u1@example.com", name: "User 1" },
+      data: {
+        email: "u1@example.com",
+        name: "User 1",
+        password: hashedPassword,
+      },
     });
     const user2 = await prisma.user.create({
-      data: { email: "u2@example.com", name: "User 2" },
+      data: {
+        email: "u2@example.com",
+        name: "User 2",
+        password: hashedPassword,
+      },
     });
     const group = await prisma.group.create({
       data: { name: "Members Group" },
@@ -68,7 +83,11 @@ describe("Group model", () => {
 
   it("prevents duplicate group membership", async () => {
     const user = await prisma.user.create({
-      data: { email: "dup@example.com", name: "Dup User" },
+      data: {
+        email: "dup@example.com",
+        name: "Dup User",
+        password: hashedPassword,
+      },
     });
     const group = await prisma.group.create({ data: { name: "Group" } });
 
@@ -85,7 +104,11 @@ describe("Group model", () => {
 
   it("cascades delete to group members when group is deleted", async () => {
     const user = await prisma.user.create({
-      data: { email: "cascade@example.com", name: "Cascade User" },
+      data: {
+        email: "cascade@example.com",
+        name: "Cascade User",
+        password: hashedPassword,
+      },
     });
     const group = await prisma.group.create({
       data: { name: "Cascade Group" },

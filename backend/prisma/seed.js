@@ -1,6 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
+const bcryptjs = require("bcryptjs");
 
 const prisma = new PrismaClient();
+const SALT_ROUNDS = 10;
 
 async function main() {
   console.log("🌱 Starting seed...");
@@ -15,16 +17,30 @@ async function main() {
   await prisma.user.deleteMany();
 
   // Users
+  const hashedPassword = await bcryptjs.hash("password123", SALT_ROUNDS);
+
   const user1 = await prisma.user.create({
-    data: { email: "john@example.com", name: "John Doe" },
+    data: {
+      email: "john@example.com",
+      name: "John Doe",
+      password: hashedPassword,
+    },
   });
 
   const user2 = await prisma.user.create({
-    data: { email: "jane@example.com", name: "Jane Smith" },
+    data: {
+      email: "jane@example.com",
+      name: "Jane Smith",
+      password: hashedPassword,
+    },
   });
 
   const user3 = await prisma.user.create({
-    data: { email: "bob@example.com", name: "Bob Johnson" },
+    data: {
+      email: "bob@example.com",
+      name: "Bob Johnson",
+      password: hashedPassword,
+    },
   });
 
   // Groups
