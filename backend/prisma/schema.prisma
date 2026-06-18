@@ -7,32 +7,137 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum SplitType {
+  EQUAL
+  EXACT
+  PERCENTAGE
+}
+
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String               @id @default(uuid())
+  email        String               @unique
+  name         String
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  groupMembers         GroupMember[]
+  expensesPaid         Expense[]            @relation("ExpensePaidBy")
+  expenseParticipants  ExpenseParticipant[]
+  debtsAsCreditor      Debt[]               @relation("DebtCreditor")
+  debtsAsDebtor        Debt[]               @relation("DebtDebtor")
+  settlementsAsPayer   Settlement[]         @relation("SettlementPayer")
+  settlementsAsPayee   Settlement[]         @relation("SettlementPayee")
 
   @@map("users")
 }
 
 model Group {
-  id          Int      @id @default(autoincrement())
+  id          String        @id @default(uuid())
   name        String
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  members     GroupMember[]
+  expenses    Expense[]
+  debts       Debt[]
+  settlements Settlement[]
 
   @@map("groups")
 }
 
+model GroupMember {
+  id        String   @id @default(uuid())
+  userId    String
+  groupId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@map("group_members")
+}
+
 model Expense {
-  id          Int      @id @default(autoincrement())
+  id          String    @id @default(uuid())
   description String
-  amount      Decimal  @db.Decimal(10, 2)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  amount      Decimal   @db.Decimal(10, 2)
+  date        DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  paidById String
+  groupId  String
+
+  paidBy       User                 @relation("ExpensePaidBy", fields: [paidById], references: [id], onDelete: Restrict)
+  group        Group                @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  participants ExpenseParticipant[]
+  debts        Debt[]
 
   @@map("expenses")
+}
+
+model ExpenseParticipant {
+  id          String    @id @default(uuid())
+  expenseId   String
+  userId      String
+  shareAmount Decimal   @db.Decimal(10, 2)
+  splitType   SplitType @default(EQUAL)
+  createdAt   DateTime  @default(now())
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([expenseId, userId])
+  @@map("expense_participants")
+}
+
+model Debt {
+  id         String   @id @default(uuid())
+  creditorId String
+  debtorId   String
+  amount     Decimal  @db.Decimal(10, 2)
+  isSettled  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  groupId   String?
+  expenseId String?
+
+  creditor  User        @relation("DebtCreditor", fields: [creditorId], references: [id], onDelete: Restrict)
+  debtor    User        @relation("DebtDebtor", fields: [debtorId], references: [id], onDelete: Restrict)
+  group     Group?      @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  expense   Expense?    @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  settlements Settlement[]
+
+  @@map("debts")
+}
+
+model Settlement {
+  id        String   @id @default(uuid())
+  payerId   String
+  payeeId   String
+  amount    Decimal  @db.Decimal(10, 2)
+  notes     String?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  groupId String?
+
+  payer   User    @relation("SettlementPayer", fields: [payerId], references: [id], onDelete: Restrict)
+  payee   User    @relation("SettlementPayee", fields: [payeeId], references: [id], onDelete: Restrict)
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  debts   Debt[]
+
+  @@map("settlements")
 }

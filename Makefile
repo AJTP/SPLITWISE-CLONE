@@ -14,9 +14,16 @@ stop:
 reset:
 	@echo "Resetting the application (removes volumes and migrations)..."
 	@docker-compose down -v
-	@rm -rf ./backend/prisma/migrations
+	@sudo rm -rf ./backend/prisma/migrations
+
+build-test:
+	@echo "Building the test environment..."
+	@docker-compose --profile tests build tests
+
+populate:
+	@echo "Populating the database with sample data..."
+	@docker-compose exec backend npm run db:seed
 
 test:
 	@echo "Running tests..."
-	@docker-compose --profile tests build tests
 	@docker-compose --profile tests run --rm tests sh -c "npm test -- --watchAll $(if $(match), -t '$(match)',) $(if $(file), --testPathPattern='$(file)',)"

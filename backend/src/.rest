@@ -1,0 +1,6 @@
+
+### Health Check
+GET http://localhost:4000/health
+
+### Users
+GET http://localhost:4000/users
