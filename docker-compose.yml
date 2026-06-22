@@ -7,6 +7,9 @@ services:
     restart: always
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-splitwise}
+      SALT_ROUNDS: ${SALT_ROUNDS:-10}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
     env_file:
       - .env
     ports:
@@ -56,6 +59,9 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-splitwise_test}
+      SALT_ROUNDS: ${SALT_ROUNDS:-10}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
     env_file:
       - .env
     volumes:

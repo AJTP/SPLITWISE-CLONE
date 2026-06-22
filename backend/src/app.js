@@ -46,13 +46,15 @@ fastify.register(require("@fastify/swagger"), {
   },
 });
 
-fastify.register(require("@scalar/fastify-api-reference"), {
-  routePrefix: "/docs",
-  configuration: {
-    title: "Splitwise Clone API",
-    theme: "default",
-  },
-});
+if (process.env.NODE_ENV !== "test") {
+  fastify.register(require("@scalar/fastify-api-reference"), {
+    routePrefix: "/docs",
+    configuration: {
+      title: "Splitwise Clone API",
+      theme: "default",
+    },
+  });
+}
 
 // ── Hooks ────────────────────────────────────────────────────────────────────
 fastify.addHook("onClose", async (instance) => {

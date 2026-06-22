@@ -15,16 +15,16 @@ async function findById(id) {
   return prisma.user.findUnique({ where: { id } });
 }
 
-async function create({ name, email }) {
-  return prisma.user.create({ data: { name, email } });
+async function create({ name, email, password }) {
+  return prisma.user.create({ data: { name, email, password } });
 }
 
-async function update(id, data) {
-  return null;
+async function update(id, { name, email }) {
+  return prisma.user.update({ where: { id }, data: { name, email } });
 }
 
 async function remove(id) {
-  return null;
+  return prisma.user.delete({ where: { id } });
 }
 
 module.exports = { findAll, findById, create, update, remove };

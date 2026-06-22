@@ -5,6 +5,8 @@ const {
   listUsersSchema,
   getUserSchema,
   createUserSchema,
+  updateUserSchema,
+  deleteUserSchema,
 } = require("./schemas");
 
 async function plugin(fastify, opts) {
@@ -22,6 +24,16 @@ async function plugin(fastify, opts) {
     "/",
     { preHandler: [authMiddleware], schema: createUserSchema },
     usersController.create,
+  );
+  fastify.put(
+    "/:id",
+    { preHandler: [authMiddleware], schema: updateUserSchema },
+    usersController.update,
+  );
+  fastify.delete(
+    "/:id",
+    { preHandler: [authMiddleware], schema: deleteUserSchema },
+    usersController.remove,
   );
 }
 

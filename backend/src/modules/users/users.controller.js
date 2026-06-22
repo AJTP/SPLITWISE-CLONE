@@ -16,11 +16,13 @@ async function create(request, reply) {
 }
 
 async function update(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+  const user = await usersService.updateUser(request.params.id, request.body);
+  return reply.code(200).send(user);
 }
 
 async function remove(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+  await usersService.removeUser(request.params.id);
+  return reply.code(204).send();
 }
 
 module.exports = { list, getOne, create, update, remove };
