@@ -1,13 +1,18 @@
+const usersService = require("./users.service");
+
 async function list(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+  const users = await usersService.listUsers();
+  return reply.code(200).send(users);
 }
 
 async function getOne(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+  const user = await usersService.getUser(request.params.id);
+  return reply.code(200).send(user);
 }
 
 async function create(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+  const user = await usersService.createUser(request.body);
+  return reply.code(201).send(user);
 }
 
 async function update(request, reply) {

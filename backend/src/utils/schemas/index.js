@@ -1,3 +1,3 @@
-const errorSchema = require("./error.schema");
+const errorResponse = require("./error.schema");
 
-module.exports = { errorSchema };
+module.exports = { errorResponse };

@@ -1,11 +1,68 @@
+const authMiddleware = require("../../middlewares/auth.middleware");
 const groupsController = require("./groups.controller");
+const expensesController = require("../expenses/expenses.controller");
+const {
+  listGroupsSchema,
+  getGroupSchema,
+  createGroupSchema,
+  deleteGroupSchema,
+  addMemberSchema,
+  listMembersSchema,
+  removeMemberSchema,
+} = require("./schemas");
+const {
+  createExpenseSchema,
+  listExpensesSchema,
+} = require("../expenses/schemas");
 
 async function plugin(fastify, opts) {
-  fastify.get("/", groupsController.list);
-  fastify.get("/:id", groupsController.getOne);
-  fastify.post("/", groupsController.create);
-  fastify.put("/:id", groupsController.update);
-  fastify.delete("/:id", groupsController.remove);
+  fastify.get(
+    "/",
+    { preHandler: [authMiddleware], schema: listGroupsSchema },
+    groupsController.list,
+  );
+  fastify.get(
+    "/:id",
+    { preHandler: [authMiddleware], schema: getGroupSchema },
+    groupsController.getOne,
+  );
+  fastify.post(
+    "/",
+    { preHandler: [authMiddleware], schema: createGroupSchema },
+    groupsController.create,
+  );
+  fastify.delete(
+    "/:id",
+    { preHandler: [authMiddleware], schema: deleteGroupSchema },
+    groupsController.remove,
+  );
+
+  fastify.post(
+    "/:id/members",
+    { preHandler: [authMiddleware], schema: addMemberSchema },
+    groupsController.addMember,
+  );
+  fastify.get(
+    "/:id/members",
+    { preHandler: [authMiddleware], schema: listMembersSchema },
+    groupsController.listMembers,
+  );
+  fastify.delete(
+    "/:id/members/:userId",
+    { preHandler: [authMiddleware], schema: removeMemberSchema },
+    groupsController.removeMember,
+  );
+
+  fastify.post(
+    "/:id/expenses",
+    { preHandler: [authMiddleware], schema: createExpenseSchema },
+    expensesController.createForGroup,
+  );
+  fastify.get(
+    "/:id/expenses",
+    { preHandler: [authMiddleware], schema: listExpensesSchema },
+    expensesController.listForGroup,
+  );
 }
 
 module.exports = plugin;

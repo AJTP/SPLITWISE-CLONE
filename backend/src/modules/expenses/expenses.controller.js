@@ -1,21 +1,30 @@
-async function list(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+const expensesService = require("./expenses.service");
+
+async function createForGroup(request, reply) {
+  const expense = await expensesService.createExpense(
+    request.params.id,
+    request.body,
+    request.user.userId,
+  );
+  return reply.code(201).send(expense);
+}
+
+async function listForGroup(request, reply) {
+  const { page = 1, limit = 20 } = request.query;
+  const expenses = await expensesService.listExpenses(
+    request.params.id,
+    request.user.userId,
+    { page: Number(page), limit: Number(limit) },
+  );
+  return reply.code(200).send(expenses);
 }
 
 async function getOne(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+  const expense = await expensesService.getExpense(
+    request.params.id,
+    request.user.userId,
+  );
+  return reply.code(200).send(expense);
 }
 
-async function create(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
-}
-
-async function update(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
-}
-
-async function remove(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
-}
-
-module.exports = { list, getOne, create, update, remove };
+module.exports = { createForGroup, listForGroup, getOne };

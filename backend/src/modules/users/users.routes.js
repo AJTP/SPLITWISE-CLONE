@@ -1,11 +1,28 @@
+const authMiddleware = require("../../middlewares/auth.middleware");
 const usersController = require("./users.controller");
 
+const {
+  listUsersSchema,
+  getUserSchema,
+  createUserSchema,
+} = require("./schemas");
+
 async function plugin(fastify, opts) {
-  fastify.get("/", usersController.list);
-  fastify.get("/:id", usersController.getOne);
-  fastify.post("/", usersController.create);
-  fastify.put("/:id", usersController.update);
-  fastify.delete("/:id", usersController.remove);
+  fastify.get(
+    "/",
+    { preHandler: [authMiddleware], schema: listUsersSchema },
+    usersController.list,
+  );
+  fastify.get(
+    "/:id",
+    { preHandler: [authMiddleware], schema: getUserSchema },
+    usersController.getOne,
+  );
+  fastify.post(
+    "/",
+    { preHandler: [authMiddleware], schema: createUserSchema },
+    usersController.create,
+  );
 }
 
 module.exports = plugin;
