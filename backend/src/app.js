@@ -62,14 +62,8 @@ fastify.addHook("onClose", async (instance) => {
 });
 
 // ── Error handler ────────────────────────────────────────────────────────────
-fastify.setErrorHandler((error, request, reply) => {
-  const statusCode = error.statusCode ?? 500;
-  reply.code(statusCode).send({
-    statusCode,
-    error: error.name,
-    message: error.message,
-  });
-});
+const errorHandler = require("./middlewares/error.handler");
+fastify.setErrorHandler(errorHandler);
 
 // ── Health check ─────────────────────────────────────────────────────────────
 fastify.get(

@@ -10,15 +10,13 @@ async function getUser(id) {
 }
 
 async function createUser({ name, email }) {
-  const password = Math.random().toString(36).slice(-8);
+  const password = Math.random().toString(36).slice(-10);
   const hashedPassword = await hashPassword(password);
-  const user = await usersRepository.create({
+  return await usersRepository.create({
     name,
     email,
     password: hashedPassword,
   });
-  console.log("User", user, "Password:", password);
-  return user;
 }
 
 async function updateUser(id, { name, email }) {

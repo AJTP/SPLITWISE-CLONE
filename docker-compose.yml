@@ -22,7 +22,7 @@ services:
       database:
         condition: service_healthy
 
-    command: npm start
+    command: npm run dev
 
   database:
     container_name: database
