@@ -132,6 +132,28 @@ describe("GET /users/:id", () => {
   });
 });
 
+describe("PUT /users/:id", () => {
+  it("returns 200 with updated user data", async () => {
+    const res = await app.inject({
+      method: "PUT",
+      url: `/users/${userAId}`,
+      headers: { authorization: `Bearer ${tokenA}` },
+      payload: { name: "Updated User A", email: "updated@example.com" },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().name).toBe("Updated User A");
+  });
+
+  it("returns 401 without token", async () => {
+    const res = await app.inject({
+      method: "PUT",
+      url: `/users/${userAId}`,
+      payload: { name: "Updated User A", email: "updated@example.com" },
+    });
+    expect(res.statusCode).toBe(401);
+  });
+});
+
 describe("DELETE /users/:id", () => {
   it("returns 204 when user is deleted", async () => {
     const created = await app.inject({
