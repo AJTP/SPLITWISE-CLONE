@@ -105,14 +105,13 @@ describe("GET /users", () => {
 });
 
 describe("GET /users/:id", () => {
-  it.only("returns 200 with the user data", async () => {
+  it("returns 200 with the user data", async () => {
     const created = await app.inject({
       method: "POST",
       url: "/users",
       headers: { authorization: `Bearer ${tokenA}` },
       payload: { name: "User C", email: "c@example.com" },
     });
-    console.log(created.json());
     const userId = created.json().id;
 
     const res = await app.inject({
@@ -120,7 +119,6 @@ describe("GET /users/:id", () => {
       url: `/users/${userId}`,
       headers: { authorization: `Bearer ${tokenA}` },
     });
-    console.log(res.json());
     expect(res.statusCode).toBe(200);
     expect(res.json().id).toBe(userId);
   });
@@ -140,7 +138,7 @@ describe("DELETE /users/:id", () => {
       method: "POST",
       url: "/users",
       headers: { authorization: `Bearer ${tokenA}` },
-      payload: { name: "To Delete" },
+      payload: { name: "To Delete", email: "to.delete@example.com" },
     });
     const userId = created.json().id;
 
