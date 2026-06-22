@@ -1,5 +1,5 @@
 const authController = require("./auth.controller");
-const { registerSchema, loginSchema } = require("./auth.schema");
+const { registerSchema, loginSchema } = require("./schemas");
 
 async function plugin(fastify, opts) {
   fastify.post(
