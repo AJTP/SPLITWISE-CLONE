@@ -1,4 +1,4 @@
-const authMiddleware = require("../../middlewares/auth.middleware");
+const adminMiddleware = require("../../middlewares/admin.middleware");
 const usersController = require("./users.controller");
 
 const {
@@ -12,27 +12,27 @@ const {
 async function plugin(fastify, opts) {
   fastify.get(
     "/",
-    { preHandler: [authMiddleware], schema: listUsersSchema },
+    { preHandler: [adminMiddleware], schema: listUsersSchema },
     usersController.list,
   );
   fastify.get(
     "/:id",
-    { preHandler: [authMiddleware], schema: getUserSchema },
+    { preHandler: [adminMiddleware], schema: getUserSchema },
     usersController.getOne,
   );
   fastify.post(
     "/",
-    { preHandler: [authMiddleware], schema: createUserSchema },
+    { preHandler: [adminMiddleware], schema: createUserSchema },
     usersController.create,
   );
   fastify.put(
     "/:id",
-    { preHandler: [authMiddleware], schema: updateUserSchema },
+    { preHandler: [adminMiddleware], schema: updateUserSchema },
     usersController.update,
   );
   fastify.delete(
     "/:id",
-    { preHandler: [authMiddleware], schema: deleteUserSchema },
+    { preHandler: [adminMiddleware], schema: deleteUserSchema },
     usersController.remove,
   );
 }

@@ -17,6 +17,11 @@ enum SplitType {
   PERCENTAGE
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 // ---------------------------------------------------------------------------
 // Models
 // ---------------------------------------------------------------------------
@@ -26,6 +31,7 @@ model User {
   email        String               @unique
   name         String
   password     String
+  role         Role                 @default(USER)
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
 

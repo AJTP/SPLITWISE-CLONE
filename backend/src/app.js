@@ -10,6 +10,11 @@ const groupsRoutes = require("./modules/groups/groups.routes");
 const expensesRoutes = require("./modules/expenses/expenses.routes");
 const settlementsRoutes = require("./modules/settlements/settlements.routes");
 
+fastify.get("/health", async () => {
+  await prisma.$queryRaw`SELECT 1`;
+  return { status: "ok", database: "connected" };
+});
+
 // ── Swagger / OpenAPI ────────────────────────────────────────────────────────
 fastify.register(require("@fastify/swagger"), options.swagger);
 if (process.env.NODE_ENV !== "test") {

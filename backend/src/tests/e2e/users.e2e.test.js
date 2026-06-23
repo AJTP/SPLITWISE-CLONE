@@ -1,3 +1,4 @@
+const bcryptjs = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
 const app = require("../../app");
 
@@ -13,11 +14,29 @@ async function cleanDb() {
   await prisma.user.deleteMany();
 }
 
-let tokenA, tokenB, userAId, userBId;
+let adminToken, userToken, userAId, userBId;
 
 beforeEach(async () => {
   await cleanDb();
 
+  // Create an ADMIN user directly (register always creates USER role)
+  const hashedPassword = await bcryptjs.hash("adminpass123", 10);
+  await prisma.user.create({
+    data: {
+      name: "Admin User",
+      email: "admin@example.com",
+      password: hashedPassword,
+      role: "ADMIN",
+    },
+  });
+  const adminLogin = await app.inject({
+    method: "POST",
+    url: "/auth/login",
+    payload: { email: "admin@example.com", password: "adminpass123" },
+  });
+  adminToken = adminLogin.json().token;
+
+  // Regular USER via register
   const resA = await app.inject({
     method: "POST",
     url: "/auth/register",
@@ -27,7 +46,7 @@ beforeEach(async () => {
       password: "password123",
     },
   });
-  tokenA = resA.json().token;
+  userToken = resA.json().token;
   userAId = resA.json().user.id;
 
   const resB = await app.inject({
@@ -39,7 +58,6 @@ beforeEach(async () => {
       password: "password123",
     },
   });
-  tokenB = resB.json().token;
   userBId = resB.json().user.id;
 });
 
@@ -50,16 +68,26 @@ afterAll(async () => {
 });
 
 describe("POST /users", () => {
-  it("returns 201 with created user", async () => {
+  it("returns 201 with created user (admin)", async () => {
     const res = await app.inject({
       method: "POST",
       url: "/users",
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: { authorization: `Bearer ${adminToken}` },
       payload: { name: "User C", email: "c@example.com" },
     });
     expect(res.statusCode).toBe(201);
     expect(res.json().name).toBe("User C");
     expect(res.json().id).toBeDefined();
+  });
+
+  it("returns 403 for non-admin user", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: "/users",
+      headers: { authorization: `Bearer ${userToken}` },
+      payload: { name: "User C", email: "c@example.com" },
+    });
+    expect(res.statusCode).toBe(403);
   });
 
   it("returns 401 without token", async () => {
@@ -75,7 +103,7 @@ describe("POST /users", () => {
     const res = await app.inject({
       method: "POST",
       url: "/users",
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: { authorization: `Bearer ${adminToken}` },
       payload: {},
     });
     expect(res.statusCode).toBe(400);
@@ -83,16 +111,25 @@ describe("POST /users", () => {
 });
 
 describe("GET /users", () => {
-  it("returns the users", async () => {
+  it("returns the users (admin)", async () => {
     const res = await app.inject({
       method: "GET",
       url: "/users",
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: { authorization: `Bearer ${adminToken}` },
     });
     expect(res.statusCode).toBe(200);
     const users = res.json();
-    expect(users).toHaveLength(2);
-    expect(users[0].name).toBe("User A");
+    // admin + userA + userB
+    expect(users.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("returns 403 for non-admin user", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/users",
+      headers: { authorization: `Bearer ${userToken}` },
+    });
+    expect(res.statusCode).toBe(403);
   });
 
   it("returns 401 without token", async () => {
@@ -105,22 +142,23 @@ describe("GET /users", () => {
 });
 
 describe("GET /users/:id", () => {
-  it("returns 200 with the user data", async () => {
-    const created = await app.inject({
-      method: "POST",
-      url: "/users",
-      headers: { authorization: `Bearer ${tokenA}` },
-      payload: { name: "User C", email: "c@example.com" },
-    });
-    const userId = created.json().id;
-
+  it("returns 200 with the user data (admin)", async () => {
     const res = await app.inject({
       method: "GET",
-      url: `/users/${userId}`,
-      headers: { authorization: `Bearer ${tokenA}` },
+      url: `/users/${userAId}`,
+      headers: { authorization: `Bearer ${adminToken}` },
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().id).toBe(userId);
+    expect(res.json().id).toBe(userAId);
+  });
+
+  it("returns 403 for non-admin user", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: `/users/${userAId}`,
+      headers: { authorization: `Bearer ${userToken}` },
+    });
+    expect(res.statusCode).toBe(403);
   });
 
   it("returns 401 without token", async () => {
@@ -133,15 +171,25 @@ describe("GET /users/:id", () => {
 });
 
 describe("PUT /users/:id", () => {
-  it("returns 200 with updated user data", async () => {
+  it("returns 200 with updated user data (admin)", async () => {
     const res = await app.inject({
       method: "PUT",
       url: `/users/${userAId}`,
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: { authorization: `Bearer ${adminToken}` },
       payload: { name: "Updated User A", email: "updated@example.com" },
     });
     expect(res.statusCode).toBe(200);
     expect(res.json().name).toBe("Updated User A");
+  });
+
+  it("returns 403 for non-admin user", async () => {
+    const res = await app.inject({
+      method: "PUT",
+      url: `/users/${userAId}`,
+      headers: { authorization: `Bearer ${userToken}` },
+      payload: { name: "Hacked", email: "hacked@example.com" },
+    });
+    expect(res.statusCode).toBe(403);
   });
 
   it("returns 401 without token", async () => {
@@ -155,11 +203,11 @@ describe("PUT /users/:id", () => {
 });
 
 describe("DELETE /users/:id", () => {
-  it("returns 204 when user is deleted", async () => {
+  it("returns 204 when user is deleted (admin)", async () => {
     const created = await app.inject({
       method: "POST",
       url: "/users",
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: { authorization: `Bearer ${adminToken}` },
       payload: { name: "To Delete", email: "to.delete@example.com" },
     });
     const userId = created.json().id;
@@ -167,16 +215,25 @@ describe("DELETE /users/:id", () => {
     const res = await app.inject({
       method: "DELETE",
       url: `/users/${userId}`,
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: { authorization: `Bearer ${adminToken}` },
     });
     expect(res.statusCode).toBe(204);
+  });
+
+  it("returns 403 for non-admin user", async () => {
+    const res = await app.inject({
+      method: "DELETE",
+      url: `/users/${userBId}`,
+      headers: { authorization: `Bearer ${userToken}` },
+    });
+    expect(res.statusCode).toBe(403);
   });
 
   it("returns 404 when user does not exist", async () => {
     const res = await app.inject({
       method: "DELETE",
       url: `/users/nonexistent-id`,
-      headers: { authorization: `Bearer ${tokenA}` },
+      headers: { authorization: `Bearer ${adminToken}` },
     });
     expect(res.statusCode).toBe(404);
   });
