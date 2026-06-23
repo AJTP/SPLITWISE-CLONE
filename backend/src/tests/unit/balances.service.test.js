@@ -168,3 +168,99 @@ describe("simplifyDebts", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// computeNetBalances — with settlements
+// ---------------------------------------------------------------------------
+describe("computeNetBalances with settlements", () => {
+  it("a full settlement zeroes out the debt between two users", () => {
+    // Alice paid $60 for Bob → alice +60, bob -60
+    const expenses = [
+      {
+        paidById: "alice",
+        participants: [{ userId: "bob", shareAmount: "60" }],
+      },
+    ];
+    // Bob settles $60 with Alice
+    const settlements = [{ payerId: "bob", payeeId: "alice", amount: "60" }];
+
+    const result = computeNetBalances(expenses, settlements);
+
+    expect(result["alice"]).toBeCloseTo(0);
+    expect(result["bob"]).toBeCloseTo(0);
+  });
+
+  it("a partial settlement reduces but does not eliminate the debt", () => {
+    const expenses = [
+      {
+        paidById: "alice",
+        participants: [{ userId: "bob", shareAmount: "90" }],
+      },
+    ];
+    const settlements = [{ payerId: "bob", payeeId: "alice", amount: "40" }];
+
+    const result = computeNetBalances(expenses, settlements);
+
+    expect(result["alice"]).toBeCloseTo(50); // 90 - 40
+    expect(result["bob"]).toBeCloseTo(-50); // -90 + 40
+  });
+
+  it("returns same result as no-settlement call when settlements array is empty", () => {
+    const expenses = [
+      {
+        paidById: "alice",
+        participants: [
+          { userId: "alice", shareAmount: "30" },
+          { userId: "bob", shareAmount: "30" },
+        ],
+      },
+    ];
+
+    expect(computeNetBalances(expenses, [])).toEqual(
+      computeNetBalances(expenses),
+    );
+  });
+
+  it("settlement from creditor to debtor increases creditor debt correctly", () => {
+    // Alice owes Bob $50 (bob +50, alice -50)
+    const expenses = [
+      {
+        paidById: "bob",
+        participants: [{ userId: "alice", shareAmount: "50" }],
+      },
+    ];
+    // Alice pays $50 → balance fully cleared
+    const settlements = [{ payerId: "alice", payeeId: "bob", amount: "50" }];
+
+    const result = computeNetBalances(expenses, settlements);
+
+    expect(result["alice"]).toBeCloseTo(0);
+    expect(result["bob"]).toBeCloseTo(0);
+  });
+
+  it("multiple settlements accumulate correctly", () => {
+    // Alice pays $90 for everyone (3-way equal → each $30)
+    const expenses = [
+      {
+        paidById: "alice",
+        participants: [
+          { userId: "alice", shareAmount: "30" },
+          { userId: "bob", shareAmount: "30" },
+          { userId: "charlie", shareAmount: "30" },
+        ],
+      },
+    ];
+    // bob pays $30, charlie pays $10 (partial)
+    const settlements = [
+      { payerId: "bob", payeeId: "alice", amount: "30" },
+      { payerId: "charlie", payeeId: "alice", amount: "10" },
+    ];
+
+    const result = computeNetBalances(expenses, settlements);
+
+    // alice: +60 (from expense) - 30 (bob's payment) - 10 (charlie's payment) = +20
+    expect(result["alice"]).toBeCloseTo(20);
+    expect(result["bob"]).toBeCloseTo(0); // -30 + 30
+    expect(result["charlie"]).toBeCloseTo(-20); // -30 + 10
+  });
+});

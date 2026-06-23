@@ -9,10 +9,13 @@ function notMemberError() {
 
 /**
  * Pure function — exported for unit testing.
- * Computes each user's net balance across all group expenses.
+ * Computes each user's net balance across all group expenses and settlements.
  * Positive = is owed money. Negative = owes money.
+ *
+ * Settlements reduce the payer's outstanding debt (+amount)
+ * and the payee's outstanding credit (-amount).
  */
-function computeNetBalances(expenses) {
+function computeNetBalances(expenses, settlements = []) {
   const balances = {};
 
   for (const expense of expenses) {
@@ -23,6 +26,12 @@ function computeNetBalances(expenses) {
       balances[uid] = (balances[uid] || 0) - share;
       balances[paidById] = (balances[paidById] || 0) + share;
     }
+  }
+
+  for (const settlement of settlements) {
+    const amount = Number(settlement.amount);
+    balances[settlement.payerId] = (balances[settlement.payerId] || 0) + amount;
+    balances[settlement.payeeId] = (balances[settlement.payeeId] || 0) - amount;
   }
 
   return balances;
@@ -78,9 +87,10 @@ async function getGroupBalances(groupId, requestingUserId) {
   const member = await groupsRepository.isMember(groupId, requestingUserId);
   if (!member) throw notMemberError();
 
-  const [expenses, members] = await Promise.all([
+  const [expenses, members, settlements] = await Promise.all([
     balancesRepository.findExpensesWithParticipants(groupId),
     balancesRepository.findGroupMembers(groupId),
+    balancesRepository.findSettlementsByGroup(groupId),
   ]);
 
   const userMap = {};
@@ -88,7 +98,7 @@ async function getGroupBalances(groupId, requestingUserId) {
     userMap[m.user.id] = m.user;
   }
 
-  const netBalances = computeNetBalances(expenses);
+  const netBalances = computeNetBalances(expenses, settlements);
 
   const balances = members.map((m) => ({
     userId: m.user.id,

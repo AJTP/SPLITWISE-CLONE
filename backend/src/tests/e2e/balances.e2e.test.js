@@ -264,3 +264,114 @@ describe("Response shape", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Settlements affect balances
+// ---------------------------------------------------------------------------
+async function createSettlement(token, groupId, payload) {
+  return app.inject({
+    method: "POST",
+    url: `/groups/${groupId}/settlements`,
+    headers: { authorization: `Bearer ${token}` },
+    payload,
+  });
+}
+
+describe("Settlements reduce outstanding balances", () => {
+  it("full settlement zeroes both parties", async () => {
+    // Alice pays $90 equal 3-way → Alice +60, Bob -30, Charlie -30
+    await createExpense(alice.token, groupId, {
+      description: "Dinner",
+      amount: 90,
+      splitType: "EQUAL",
+      participants: [
+        { userId: alice.userId },
+        { userId: bob.userId },
+        { userId: charlie.userId },
+      ],
+    });
+
+    // Bob pays Alice $30 (fully settles Bob's debt)
+    await createSettlement(alice.token, groupId, {
+      payerId: bob.userId,
+      payeeId: alice.userId,
+      amount: 30,
+    });
+
+    const res = await getBalances(alice.token, groupId);
+    expect(res.statusCode).toBe(200);
+
+    const { balances, simplifiedDebts } = res.json();
+    const aliceBal = balances.find((b) => b.userId === alice.userId);
+    const bobBal = balances.find((b) => b.userId === bob.userId);
+    const charlieBal = balances.find((b) => b.userId === charlie.userId);
+
+    expect(aliceBal.amount).toBeCloseTo(30); // 60 - 30
+    expect(bobBal.amount).toBeCloseTo(0); // -30 + 30
+    expect(charlieBal.amount).toBeCloseTo(-30); // unchanged
+
+    // Only Charlie still owes Alice
+    expect(simplifiedDebts).toHaveLength(1);
+    expect(simplifiedDebts[0].fromUserId).toBe(charlie.userId);
+    expect(simplifiedDebts[0].toUserId).toBe(alice.userId);
+  });
+
+  it("all debts settled → zero balances and no simplified debts", async () => {
+    await createExpense(alice.token, groupId, {
+      description: "Hotel",
+      amount: 90,
+      splitType: "EQUAL",
+      participants: [
+        { userId: alice.userId },
+        { userId: bob.userId },
+        { userId: charlie.userId },
+      ],
+    });
+
+    await createSettlement(alice.token, groupId, {
+      payerId: bob.userId,
+      payeeId: alice.userId,
+      amount: 30,
+    });
+    await createSettlement(alice.token, groupId, {
+      payerId: charlie.userId,
+      payeeId: alice.userId,
+      amount: 30,
+    });
+
+    const res = await getBalances(alice.token, groupId);
+    const { balances, simplifiedDebts } = res.json();
+
+    balances.forEach((b) => expect(b.amount).toBeCloseTo(0));
+    expect(simplifiedDebts).toHaveLength(0);
+  });
+
+  it("partial settlement keeps remaining debt in simplifiedDebts", async () => {
+    await createExpense(alice.token, groupId, {
+      description: "Groceries",
+      amount: 60,
+      splitType: "EQUAL",
+      participants: [{ userId: alice.userId }, { userId: bob.userId }],
+    });
+    // Alice +30, Bob -30
+    // Bob partially pays $10
+    await createSettlement(alice.token, groupId, {
+      payerId: bob.userId,
+      payeeId: alice.userId,
+      amount: 10,
+      notes: "partial payment",
+    });
+
+    const res = await getBalances(alice.token, groupId);
+    const { balances, simplifiedDebts } = res.json();
+
+    const aliceBal = balances.find((b) => b.userId === alice.userId);
+    const bobBal = balances.find((b) => b.userId === bob.userId);
+
+    expect(aliceBal.amount).toBeCloseTo(20);
+    expect(bobBal.amount).toBeCloseTo(-20);
+
+    expect(simplifiedDebts).toHaveLength(1);
+    expect(simplifiedDebts[0].amount).toBeCloseTo(20);
+  });
+});

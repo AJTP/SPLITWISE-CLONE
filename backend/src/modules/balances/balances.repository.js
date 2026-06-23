@@ -21,4 +21,15 @@ async function findGroupMembers(groupId) {
   });
 }
 
-module.exports = { findExpensesWithParticipants, findGroupMembers };
+async function findSettlementsByGroup(groupId) {
+  return prisma.settlement.findMany({
+    where: { groupId },
+    select: { payerId: true, payeeId: true, amount: true },
+  });
+}
+
+module.exports = {
+  findExpensesWithParticipants,
+  findGroupMembers,
+  findSettlementsByGroup,
+};

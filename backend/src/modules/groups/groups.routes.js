@@ -2,6 +2,7 @@ const authMiddleware = require("../../middlewares/auth.middleware");
 const groupsController = require("./groups.controller");
 const expensesController = require("../expenses/expenses.controller");
 const balancesController = require("../balances/balances.controller");
+const settlementsController = require("../settlements/settlements.controller");
 
 const {
   listGroupsSchema,
@@ -19,6 +20,7 @@ const {
 } = require("../expenses/schemas");
 
 const { getGroupBalancesSchema } = require("../balances/schemas");
+const { createSettlementSchema } = require("../settlements/schemas");
 
 async function plugin(fastify, opts) {
   fastify.get(
@@ -76,6 +78,13 @@ async function plugin(fastify, opts) {
     "/:id/balances",
     { preHandler: [authMiddleware], schema: getGroupBalancesSchema },
     balancesController.getByGroup,
+  );
+
+  // Settlements routes
+  fastify.post(
+    "/:id/settlements",
+    { preHandler: [authMiddleware], schema: createSettlementSchema },
+    settlementsController.create,
   );
 }
 

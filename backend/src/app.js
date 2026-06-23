@@ -12,7 +12,9 @@ const settlementsRoutes = require("./modules/settlements/settlements.routes");
 
 // ── Swagger / OpenAPI ────────────────────────────────────────────────────────
 fastify.register(require("@fastify/swagger"), options.swagger);
-fastify.register(require("@scalar/fastify-api-reference"), options.scalar);
+if (process.env.NODE_ENV !== "test") {
+  fastify.register(require("@scalar/fastify-api-reference"), options.scalar);
+}
 
 // ── Hooks ────────────────────────────────────────────────────────────────────
 fastify.addHook("onClose", async (instance) => {
