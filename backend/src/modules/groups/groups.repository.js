@@ -12,11 +12,26 @@ async function findById(groupId) {
   return prisma.group.findUnique({ where: { id: groupId } });
 }
 
+async function findUserById(userId) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, name: true },
+  });
+}
+
+// userId is nullable now → use findFirst
 async function isMember(groupId, userId) {
-  const membership = await prisma.groupMember.findUnique({
-    where: { userId_groupId: { userId, groupId } },
+  if (!userId) return false;
+  const membership = await prisma.groupMember.findFirst({
+    where: { groupId, userId },
   });
   return Boolean(membership);
+}
+
+async function findMemberByAlias(groupId, alias) {
+  return prisma.groupMember.findUnique({
+    where: { alias_groupId: { alias, groupId } },
+  });
 }
 
 async function create({ name, description }) {
@@ -27,8 +42,8 @@ async function remove(groupId) {
   return prisma.group.delete({ where: { id: groupId } });
 }
 
-async function addMember(groupId, userId) {
-  return prisma.groupMember.create({ data: { groupId, userId } });
+async function addMember(groupId, { userId = null, alias }) {
+  return prisma.groupMember.create({ data: { groupId, userId, alias } });
 }
 
 async function findMembers(groupId) {
@@ -41,18 +56,44 @@ async function findMembers(groupId) {
 }
 
 async function removeMember(groupId, userId) {
-  return prisma.groupMember.delete({
-    where: { userId_groupId: { userId, groupId } },
+  const member = await prisma.groupMember.findFirst({
+    where: { groupId, userId },
+  });
+  if (!member) return null;
+  return prisma.groupMember.delete({ where: { id: member.id } });
+}
+
+async function setInviteToken(groupId, token) {
+  return prisma.group.update({
+    where: { id: groupId },
+    data: { inviteToken: token },
+  });
+}
+
+async function findGroupByInviteToken(token) {
+  return prisma.group.findUnique({
+    where: { inviteToken: token },
+    include: {
+      members: {
+        include: {
+          user: { select: { id: true, name: true, email: true } },
+        },
+      },
+    },
   });
 }
 
 module.exports = {
   findAllByUserId,
   findById,
+  findUserById,
   isMember,
+  findMemberByAlias,
   create,
   remove,
   addMember,
   findMembers,
   removeMember,
+  setInviteToken,
+  findGroupByInviteToken,
 };

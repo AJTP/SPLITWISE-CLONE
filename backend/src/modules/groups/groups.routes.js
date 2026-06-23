@@ -12,6 +12,7 @@ const {
   addMemberSchema,
   listMembersSchema,
   removeMemberSchema,
+  generateInviteSchema,
 } = require("./schemas");
 
 const {
@@ -85,6 +86,13 @@ async function plugin(fastify, opts) {
     "/:id/settlements",
     { preHandler: [authMiddleware], schema: createSettlementSchema },
     settlementsController.create,
+  );
+
+  // Invite routes
+  fastify.post(
+    "/:id/invite",
+    { preHandler: [authMiddleware], schema: generateInviteSchema },
+    groupsController.generateInviteToken,
   );
 }
 

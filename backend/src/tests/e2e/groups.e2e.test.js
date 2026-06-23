@@ -195,6 +195,34 @@ describe("POST /groups/:id/members", () => {
     groupId = created.json().id;
   });
 
+  it("returns 201 when adding a guest by alias", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: `/groups/${groupId}/members`,
+      headers: { authorization: `Bearer ${tokenA}` },
+      payload: { alias: "Carlos" },
+    });
+    expect(res.statusCode).toBe(201);
+    expect(res.json().alias).toBe("Carlos");
+    expect(res.json().userId).toBeNull();
+  });
+
+  it("returns 409 when alias is already in use", async () => {
+    await app.inject({
+      method: "POST",
+      url: `/groups/${groupId}/members`,
+      headers: { authorization: `Bearer ${tokenA}` },
+      payload: { alias: "Carlos" },
+    });
+    const res = await app.inject({
+      method: "POST",
+      url: `/groups/${groupId}/members`,
+      headers: { authorization: `Bearer ${tokenA}` },
+      payload: { alias: "Carlos" },
+    });
+    expect(res.statusCode).toBe(409);
+  });
+
   it("returns 201 when adding a new member", async () => {
     const res = await app.inject({
       method: "POST",
@@ -203,6 +231,7 @@ describe("POST /groups/:id/members", () => {
       payload: { userId: userBId },
     });
     expect(res.statusCode).toBe(201);
+    expect(res.json().alias).toBe("User B");
   });
 
   it("returns 409 when user is already a member", async () => {

@@ -50,6 +50,7 @@ model Group {
   id          String        @id @default(uuid())
   name        String
   description String?
+  inviteToken String?       @unique @map("invite_token")
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -63,14 +64,15 @@ model Group {
 
 model GroupMember {
   id        String   @id @default(uuid())
-  userId    String
+  userId    String?
   groupId   String
+  alias     String
   createdAt DateTime @default(now())
 
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  group Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, groupId])
+  @@unique([alias, groupId])
   @@map("group_members")
 }
 

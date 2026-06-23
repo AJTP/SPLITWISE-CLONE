@@ -29,7 +29,7 @@ async function remove(request, reply) {
 async function addMember(request, reply) {
   const member = await groupsService.addMember(
     request.params.id,
-    request.body.userId,
+    request.body,
     request.user.userId,
   );
   return reply.code(201).send(member);
@@ -52,6 +52,14 @@ async function removeMember(request, reply) {
   return reply.code(204).send();
 }
 
+async function generateInviteToken(request, reply) {
+  const result = await groupsService.generateInviteToken(
+    request.params.id,
+    request.user.userId,
+  );
+  return reply.code(200).send(result);
+}
+
 module.exports = {
   list,
   getOne,
@@ -60,4 +68,5 @@ module.exports = {
   addMember,
   listMembers,
   removeMember,
+  generateInviteToken,
 };

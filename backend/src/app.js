@@ -9,6 +9,7 @@ const usersRoutes = require("./modules/users/users.routes");
 const groupsRoutes = require("./modules/groups/groups.routes");
 const expensesRoutes = require("./modules/expenses/expenses.routes");
 const settlementsRoutes = require("./modules/settlements/settlements.routes");
+const invitationsRoutes = require("./modules/invitations/invitations.routes");
 
 fastify.get("/health", async () => {
   await prisma.$queryRaw`SELECT 1`;
@@ -36,5 +37,6 @@ fastify.register(usersRoutes, { prefix: "/users" });
 fastify.register(groupsRoutes, { prefix: "/groups" });
 fastify.register(expensesRoutes, { prefix: "/expenses" });
 fastify.register(settlementsRoutes, { prefix: "/settlements" });
+fastify.register(invitationsRoutes, { prefix: "/invitations" });
 
 module.exports = fastify;
