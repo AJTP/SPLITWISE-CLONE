@@ -1,6 +1,8 @@
 const authMiddleware = require("../../middlewares/auth.middleware");
 const groupsController = require("./groups.controller");
 const expensesController = require("../expenses/expenses.controller");
+const balancesController = require("../balances/balances.controller");
+
 const {
   listGroupsSchema,
   getGroupSchema,
@@ -10,10 +12,13 @@ const {
   listMembersSchema,
   removeMemberSchema,
 } = require("./schemas");
+
 const {
   createExpenseSchema,
   listExpensesSchema,
 } = require("../expenses/schemas");
+
+const { getGroupBalancesSchema } = require("../balances/schemas");
 
 async function plugin(fastify, opts) {
   fastify.get(
@@ -37,6 +42,7 @@ async function plugin(fastify, opts) {
     groupsController.remove,
   );
 
+  // Members routes
   fastify.post(
     "/:id/members",
     { preHandler: [authMiddleware], schema: addMemberSchema },
@@ -53,6 +59,7 @@ async function plugin(fastify, opts) {
     groupsController.removeMember,
   );
 
+  // Expenses routes
   fastify.post(
     "/:id/expenses",
     { preHandler: [authMiddleware], schema: createExpenseSchema },
@@ -62,6 +69,13 @@ async function plugin(fastify, opts) {
     "/:id/expenses",
     { preHandler: [authMiddleware], schema: listExpensesSchema },
     expensesController.listForGroup,
+  );
+
+  // Balances routes
+  fastify.get(
+    "/:id/balances",
+    { preHandler: [authMiddleware], schema: getGroupBalancesSchema },
+    balancesController.getByGroup,
   );
 }
 

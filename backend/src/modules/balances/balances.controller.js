@@ -1,5 +1,11 @@
+const balancesService = require("./balances.service");
+
 async function getByGroup(request, reply) {
-  return reply.code(501).send({ message: "not implemented" });
+  const result = await balancesService.getGroupBalances(
+    request.params.id,
+    request.user.userId,
+  );
+  return reply.code(200).send(result);
 }
 
 module.exports = { getByGroup };
