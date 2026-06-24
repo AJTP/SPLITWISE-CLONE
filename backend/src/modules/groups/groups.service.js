@@ -17,11 +17,32 @@ async function getGroup(groupId, userId) {
   return groupsRepository.findById(groupId);
 }
 
-async function createGroup({ name, description }, userId) {
-  const group = await groupsRepository.create({ name, description });
+async function createGroup({ name, description, aliases = [] }, userId) {
   const user = await groupsRepository.findUserById(userId);
-  await groupsRepository.addMember(group.id, { userId, alias: user.name });
-  return group;
+
+  // Validate: no duplicate aliases in the provided list
+  const normalized = aliases.map((a) => a.trim()).filter(Boolean);
+  const uniqueAliases = [...new Set(normalized.map((a) => a.toLowerCase()))];
+  if (uniqueAliases.length < normalized.length) {
+    const err = new Error("Duplicate aliases provided");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  // Validate: none of the aliases collide with the creator's name
+  if (normalized.some((a) => a.toLowerCase() === user.name.toLowerCase())) {
+    const err = new Error(
+      `Alias '${user.name}' is already used by the group creator`,
+    );
+    err.statusCode = 400;
+    throw err;
+  }
+
+  return groupsRepository.createWithMembers(
+    { name, description },
+    { userId, alias: user.name },
+    normalized,
+  );
 }
 
 async function deleteGroup(groupId, userId) {

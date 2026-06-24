@@ -1,0 +1,36 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.aliasList {
+  @include flex-column;
+  gap: $space-2;
+}
+
+.aliasRow {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2;
+}
+
+.aliasInput {
+  flex: 1;
+}
+
+.removeBtn {
+  flex-shrink: 0;
+  margin-top: 26px; // align with input (label height)
+  color: $color-danger;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+  font-size: $font-size-lg;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-danger-light;
+  }
+}
+
+.addBtn {
+  align-self: flex-start;
+  margin-top: $space-2;
+}

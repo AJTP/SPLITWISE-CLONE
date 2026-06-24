@@ -1,0 +1,39 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.tabs {
+  @include flex-column;
+  width: 100%;
+}
+
+.tabList {
+  display: flex;
+  border-bottom: 2px solid $color-border;
+}
+
+.tab {
+  padding: $space-3 $space-6;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition:
+    color $transition-fast,
+    border-color $transition-fast;
+  @include focus-ring;
+
+  &:hover:not(.active) {
+    color: $color-text;
+    background-color: $color-bg-hover;
+  }
+
+  &.active {
+    color: $color-primary;
+    border-bottom-color: $color-primary;
+  }
+}
+
+.panel {
+  padding: $space-6 0;
+}

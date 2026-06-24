@@ -24,6 +24,18 @@ services:
 
     command: npm run dev
 
+  frontend:
+    container_name: frontend
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./splitwise-clone:/app:delegated
+    environment:
+      VITE_API_BASE_URL: http://localhost:${BACKEND_PORT:-4000}
+
   database:
     container_name: database
     image: postgres:15-alpine

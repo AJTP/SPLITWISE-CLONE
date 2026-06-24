@@ -1,0 +1,95 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.page {
+  @include flex-column;
+  min-height: 100vh;
+  background-color: $color-bg;
+}
+
+.header {
+  @include flex-between;
+  padding: $space-4 $space-6;
+  background-color: $color-bg-card;
+  border-bottom: 1px solid $color-border;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+}
+
+.appName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.userName {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.content {
+  flex: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding: $space-6 $space-4;
+  @include flex-column;
+  gap: $space-4;
+}
+
+.sectionHeader {
+  @include flex-between;
+}
+
+.sectionTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+}
+
+.groupList {
+  @include flex-column;
+  gap: $space-3;
+}
+
+.groupCard {
+  @include card;
+  @include flex-between;
+  padding: $space-4 $space-5;
+  cursor: pointer;
+  transition:
+    box-shadow $transition-fast,
+    background-color $transition-fast;
+  @include focus-ring;
+  width: 100%;
+  text-align: left;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    background-color: $color-bg-hover;
+  }
+}
+
+.groupName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text;
+}
+
+.groupMeta {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.arrow {
+  color: $color-text-disabled;
+  font-size: $font-size-lg;
+}

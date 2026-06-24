@@ -1,0 +1,16 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.page {
+  @include flex-center;
+  @include flex-column;
+  min-height: 100vh;
+  gap: $space-4;
+  background-color: $color-bg;
+}
+
+.appName {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}

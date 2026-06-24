@@ -1,0 +1,144 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.form {
+  @include flex-column;
+  gap: $space-4;
+}
+
+.splitTypeGroup {
+  display: flex;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.splitTypeBtn {
+  flex: 1;
+  padding: $space-2;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  background-color: $color-bg-card;
+  transition:
+    background-color $transition-fast,
+    color $transition-fast;
+  border-right: 1px solid $color-border;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &.active {
+    background-color: $color-primary;
+    color: #fff;
+  }
+
+  &:hover:not(.active) {
+    background-color: $color-bg-hover;
+  }
+}
+
+.sectionLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  margin-bottom: $space-2;
+}
+
+.participantList {
+  @include flex-column;
+  gap: $space-2;
+}
+
+.participantRow {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background-color: $color-bg-card;
+}
+
+.participantName {
+  flex: 1;
+  font-size: $font-size-md;
+}
+
+.participantAmount {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  min-width: 70px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.participantRightGroup {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-shrink: 0;
+}
+
+.participantInput {
+  width: 80px;
+}
+
+.pctPreview {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  min-width: 56px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sumBar {
+  @include flex-between;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  margin-top: $space-1;
+
+  &.ok {
+    background-color: $color-success-light;
+    color: $color-success;
+  }
+
+  &.pending {
+    background-color: $color-warning-light;
+    color: $color-warning;
+  }
+}
+
+.validationMsg {
+  font-size: $font-size-sm;
+  color: $color-danger;
+  margin-top: $space-1;
+}
+
+.select {
+  width: 100%;
+  padding: $space-2 $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  color: $color-text;
+  background-color: $color-bg-card;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: $color-border-focus;
+    box-shadow: 0 0 0 3px rgba(26, 127, 90, 0.15);
+  }
+}
+
+.selectLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  margin-bottom: $space-1;
+  display: block;
+}

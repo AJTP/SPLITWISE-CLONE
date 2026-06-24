@@ -38,6 +38,35 @@ async function create({ name, description }) {
   return prisma.group.create({ data: { name, description } });
 }
 
+/**
+ * Creates a group together with all its initial members in a single transaction.
+ * @param {{ name: string, description?: string }} groupData
+ * @param {{ userId: string, alias: string }} creator
+ * @param {string[]} aliases  - additional guest aliases
+ * @returns {Promise<Group & { members: GroupMember[] }>}
+ */
+async function createWithMembers(groupData, creator, aliases) {
+  return prisma.$transaction(async (tx) => {
+    const group = await tx.group.create({ data: groupData });
+
+    const membersToCreate = [
+      { groupId: group.id, userId: creator.userId, alias: creator.alias },
+      ...aliases.map((alias) => ({ groupId: group.id, userId: null, alias })),
+    ];
+
+    await tx.groupMember.createMany({ data: membersToCreate });
+
+    const members = await tx.groupMember.findMany({
+      where: { groupId: group.id },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    return { ...group, members };
+  });
+}
+
 async function remove(groupId) {
   return prisma.group.delete({ where: { id: groupId } });
 }
@@ -90,6 +119,7 @@ module.exports = {
   isMember,
   findMemberByAlias,
   create,
+  createWithMembers,
   remove,
   addMember,
   findMembers,

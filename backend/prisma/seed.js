@@ -104,27 +104,27 @@ async function main() {
   await prisma.groupMember.createMany({
     data: [
       // Apartment: John, Jane, Bob
-      { userId: user1.id, groupId: aptGroup.id },
-      { userId: user2.id, groupId: aptGroup.id },
-      { userId: user3.id, groupId: aptGroup.id },
+      { userId: user1.id, groupId: aptGroup.id, alias: user1.name },
+      { userId: user2.id, groupId: aptGroup.id, alias: user2.name },
+      { userId: user3.id, groupId: aptGroup.id, alias: user3.name },
       // Vacation: John, Jane
-      { userId: user1.id, groupId: vacGroup.id },
-      { userId: user2.id, groupId: vacGroup.id },
+      { userId: user1.id, groupId: vacGroup.id, alias: user1.name },
+      { userId: user2.id, groupId: vacGroup.id, alias: user2.name },
       // Work Lunches: John, Jane, Bob, Alice
-      { userId: user1.id, groupId: lunchGroup.id },
-      { userId: user2.id, groupId: lunchGroup.id },
-      { userId: user3.id, groupId: lunchGroup.id },
-      { userId: user4.id, groupId: lunchGroup.id },
+      { userId: user1.id, groupId: lunchGroup.id, alias: user1.name },
+      { userId: user2.id, groupId: lunchGroup.id, alias: user2.name },
+      { userId: user3.id, groupId: lunchGroup.id, alias: user3.name },
+      { userId: user4.id, groupId: lunchGroup.id, alias: user4.name },
       // Road Trip: John, Bob, Alice, Charlie
-      { userId: user1.id, groupId: tripGroup.id },
-      { userId: user3.id, groupId: tripGroup.id },
-      { userId: user4.id, groupId: tripGroup.id },
-      { userId: user5.id, groupId: tripGroup.id },
+      { userId: user1.id, groupId: tripGroup.id, alias: user1.name },
+      { userId: user3.id, groupId: tripGroup.id, alias: user3.name },
+      { userId: user4.id, groupId: tripGroup.id, alias: user4.name },
+      { userId: user5.id, groupId: tripGroup.id, alias: user5.name },
       // House Renovation: John, Jane, Alice, Charlie
-      { userId: user1.id, groupId: renovGroup.id },
-      { userId: user2.id, groupId: renovGroup.id },
-      { userId: user4.id, groupId: renovGroup.id },
-      { userId: user5.id, groupId: renovGroup.id },
+      { userId: user1.id, groupId: renovGroup.id, alias: user1.name },
+      { userId: user2.id, groupId: renovGroup.id, alias: user2.name },
+      { userId: user4.id, groupId: renovGroup.id, alias: user4.name },
+      { userId: user5.id, groupId: renovGroup.id, alias: user5.name },
     ],
   });
 

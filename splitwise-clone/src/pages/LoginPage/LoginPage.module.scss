@@ -1,0 +1,65 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.page {
+  @include flex-center;
+  min-height: 100vh;
+  background-color: $color-bg;
+  padding: $space-4;
+}
+
+.card {
+  @include card;
+  width: 100%;
+  max-width: 400px;
+  padding: $space-8 $space-8 $space-6;
+  @include flex-column;
+  gap: $space-6;
+}
+
+.header {
+  @include flex-column;
+  align-items: center;
+  gap: $space-2;
+}
+
+.appName {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.form {
+  @include flex-column;
+  gap: $space-4;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  padding-top: $space-2;
+  border-top: 1px solid $color-border;
+}
+
+.link {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-primary-light;
+  }
+}

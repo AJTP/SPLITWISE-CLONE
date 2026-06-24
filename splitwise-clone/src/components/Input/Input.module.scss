@@ -1,0 +1,80 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.field {
+  @include flex-column;
+  gap: $space-1;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+}
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: $space-2 $space-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  color: $color-text;
+  background-color: $color-bg-card;
+  transition:
+    border-color $transition-fast,
+    box-shadow $transition-fast;
+  outline: none;
+
+  &::placeholder {
+    color: $color-text-disabled;
+  }
+
+  &:focus {
+    border-color: $color-border-focus;
+    box-shadow: 0 0 0 3px rgba(26, 127, 90, 0.15);
+  }
+
+  &.hasError {
+    border-color: $color-danger;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.15);
+    }
+  }
+
+  &.hasToggle {
+    padding-right: $space-10;
+  }
+}
+
+.toggleBtn {
+  position: absolute;
+  right: $space-3;
+  display: flex;
+  align-items: center;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  padding: $space-1;
+  border-radius: $radius-sm;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-text;
+  }
+}
+
+.error {
+  font-size: $font-size-sm;
+  color: $color-danger;
+}
+
+.helper {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}

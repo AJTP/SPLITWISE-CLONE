@@ -3,13 +3,31 @@ build:
 	@docker-compose build
 
 start:
-	@echo "Starting the application..."
-	@docker-compose up -d
+	@echo "Starting backend and database..."
+	@docker-compose up -d backend database
 	@docker-compose logs -f backend database
+
+start-frontend:
+	@echo "Starting frontend..."
+	@docker-compose up -d frontend
+	@docker-compose logs -f frontend
+
+start-all:
+	@echo "Starting backend, database and frontend..."
+	@docker-compose up -d backend database frontend
+	@docker-compose logs -f backend database frontend
 
 stop:
 	@echo "Stopping the application..."
 	@docker-compose down
+
+dev-frontend:
+	@echo "Starting frontend in development mode..."
+	@cd splitwise-clone && npm run dev
+
+install-frontend:
+	@echo "Installing frontend dependencies..."
+	@cd splitwise-clone && npm install
 
 reset:
 	@echo "Resetting the application (removes volumes and migrations)..."

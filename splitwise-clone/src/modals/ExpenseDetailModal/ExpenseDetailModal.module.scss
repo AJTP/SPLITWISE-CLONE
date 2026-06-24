@@ -1,0 +1,97 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.content {
+  @include flex-column;
+  gap: $space-5;
+}
+
+.header {
+  text-align: center;
+  padding-bottom: $space-4;
+  border-bottom: 1px solid $color-border;
+}
+
+.description {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+  margin-bottom: $space-2;
+}
+
+.amount {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.meta {
+  @include flex-column;
+  gap: $space-2;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: $space-3;
+  padding: $space-2 0;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  dt {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    flex-shrink: 0;
+  }
+
+  dd {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-text;
+    text-align: right;
+  }
+}
+
+.sectionLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $space-2;
+}
+
+.participantList {
+  @include flex-column;
+  gap: $space-1;
+}
+
+.participantRow {
+  @include flex-between;
+  padding: $space-2 $space-3;
+  background-color: $color-bg;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+}
+
+.participantName {
+  font-size: $font-size-md;
+  color: $color-text;
+}
+
+.participantShare {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+}
+
+.empty {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  text-align: center;
+  padding: $space-4;
+}

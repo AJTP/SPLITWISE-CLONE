@@ -1,0 +1,59 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.page {
+  @include flex-column;
+  min-height: 100vh;
+  background-color: $color-bg;
+}
+
+.header {
+  @include flex-between;
+  padding: $space-4 $space-6;
+  background-color: $color-bg-card;
+  border-bottom: 1px solid $color-border;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  gap: $space-3;
+}
+
+.backBtn {
+  @include focus-ring;
+  color: $color-primary;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  border-radius: $radius-sm;
+  padding: $space-1 $space-2;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-primary-light;
+  }
+}
+
+.groupName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+  flex: 1;
+  text-align: center;
+}
+
+.content {
+  flex: 1;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: $space-4;
+  @include flex-column;
+}
+
+.centered {
+  @include flex-center;
+  padding: $space-12;
+}

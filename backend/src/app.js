@@ -16,6 +16,14 @@ fastify.get("/health", async () => {
   return { status: "ok", database: "connected" };
 });
 
+// ── CORS ─────────────────────────────────────────────────────────────────────
+fastify.register(require("@fastify/cors"), {
+  origin: process.env.CORS_ORIGIN ?? true, // true = reflect request origin (dev)
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+});
+
 // ── Swagger / OpenAPI ────────────────────────────────────────────────────────
 fastify.register(require("@fastify/swagger"), options.swagger);
 if (process.env.NODE_ENV !== "test") {

@@ -1,0 +1,116 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+
+.tab {
+  @include flex-column;
+  gap: $space-5;
+}
+
+.myBalanceCard {
+  @include card;
+  padding: $space-5;
+  @include flex-column;
+  gap: $space-2;
+}
+
+.myBalanceLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.myBalanceAmount {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+
+  &.positive {
+    color: $color-positive;
+  }
+  &.negative {
+    color: $color-negative;
+  }
+  &.zero {
+    color: $color-text;
+  }
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+  margin-bottom: $space-2;
+}
+
+.balanceList {
+  @include flex-column;
+  gap: $space-2;
+}
+
+.balanceItem {
+  @include card;
+  @include flex-between;
+  padding: $space-3 $space-4;
+}
+
+.memberName {
+  font-size: $font-size-md;
+  color: $color-text;
+}
+
+.amount {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+
+  &.positive {
+    color: $color-positive;
+  }
+  &.negative {
+    color: $color-negative;
+  }
+  &.zero {
+    color: $color-text-secondary;
+  }
+}
+
+.debtList {
+  @include flex-column;
+  gap: $space-2;
+}
+
+.debtItem {
+  @include card;
+  @include flex-between;
+  padding: $space-3 $space-4;
+  gap: $space-3;
+}
+
+.debtItemClickable {
+  cursor: pointer;
+  transition:
+    box-shadow $transition-fast,
+    background-color $transition-fast;
+  @include focus-ring;
+  width: 100%;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    background-color: $color-bg-hover;
+  }
+}
+
+.debtText {
+  font-size: $font-size-md;
+  color: $color-text;
+  flex: 1;
+}
+
+.debtAmount {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-negative;
+  flex-shrink: 0;
+}
+
+.settleHint {
+  font-size: $font-size-xs;
+  color: $color-primary;
+}
